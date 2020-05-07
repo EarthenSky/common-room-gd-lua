@@ -1,43 +1,55 @@
 --Double commented code (----) is not a note, but removed code.
 
--- Constant variables.
-ScreenSize = {x=640, y=640}
-CurrentScene = 0
+-- Global variables
+SCREEN_SIZE = {x=720, y=480}
+isMenu = true
 
 function love.load()
     -- Images are loaded here.
 
     -- Set up the window.
-    love.window.setMode(ScreenSize.x, ScreenSize.y, {resizable=false, vsync=true})
+    love.window.setMode(SCREEN_SIZE.x, SCREEN_SIZE.y, {resizable=false, vsync=true})
     love.window.setTitle("Love2D Template")
-    love.graphics.setBackgroundColor(0, 0, 0, 255)
 
     -- Other Modules are loaded here.
-    ----util = require "util"
+    menu = require "src/menu"
+
+    scene = require "src/scene"
+    scene.load()
 
     -- Any initialization code goes here.
-    ----button = util.createButton({x=100, y=200}, {w=400, h=200}, "It is I, button", 0)  -- Pass zero, instead of function.
+    menu.init()
 end
 
 -- Only drawing and maybe come conditional statements go here.
 function love.draw()
-    if CurrentScene == 0 then
-
-    elseif CurrentScene == 1 then
-
+    if isMenu then
+        menu.draw()
+    elseif not isMenu then
+        scene.draw()
     end
 
-    -- Print the current scene in the top left corner and set colour + font size
+    -- Print if menu
     love.graphics.setFont(love.graphics.newFont(18))
-    love.graphics.setColor(250, 250, 250, 255)
-    love.graphics.print(CurrentScene, 2, 2)
+    love.graphics.setColor(0.99, 0.99, 0.99, 1)
+    love.graphics.print(isMenu and "inMenu" or "inGame", 2, 2)  -- stupid lua ternary operator :/
 end
 
 -- No drawing code, Math or physics code here.
 function love.update(dt)
-    if CurrentScene == 0 then
+    if isMenu then
 
-    elseif CurrentScene == 1 then
+    elseif not isMenu then
 
     end
 end
+
+-- callback function for key events
+function love.keypressed(key, scancode, isrepeat)
+    if isMenu then
+        menu.keypressed(key)
+    elseif not isMenu then
+        scene.keypressed(key)
+    end
+end
+ 
