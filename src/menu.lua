@@ -26,6 +26,7 @@ function Menu.init()
     love.graphics.setBackgroundColor(backcolor)
 
     optionList[0].func = scene.init
+    optionList[2].func = love.event.quit
 end
 
 function Menu.draw()
@@ -64,15 +65,21 @@ function Menu.keypressed(key)
         end
     end
 
+    -- resets the cursor to be not hovering anything
     if key == "lshift" then
         hoveredOption = -1
     end
 
+    -- select the thing
     if key == "return" then
-        print("op = " .. hoveredOption)
         if optionList[hoveredOption].func ~= nil then
             optionList[hoveredOption].func()
         end
+    end
+
+    -- bai bai
+    if key == "escape" then
+        love.event.quit(0)
     end
 end
 

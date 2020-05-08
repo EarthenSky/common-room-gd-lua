@@ -1,7 +1,7 @@
 --Double commented code (----) is not a note, but removed code.
 
 -- Global variables
-SCREEN_SIZE = {x=720, y=480}
+SCREEN_SIZE = {x=1280, y=720}
 isMenu = true
 
 function love.load()
@@ -12,9 +12,9 @@ function love.load()
     love.window.setTitle("Love2D Template")
 
     -- Other Modules are loaded here.
+    util = require "util"
     menu = require "src/menu"
-
-    scene = require "src/scene"
+    scene = require "src/game/scene"
     scene.load()
 
     -- Any initialization code goes here.
@@ -40,7 +40,7 @@ function love.update(dt)
     if isMenu then
 
     elseif not isMenu then
-
+        scene.update(dt)
     end
 end
 
