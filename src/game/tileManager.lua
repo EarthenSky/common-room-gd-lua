@@ -23,16 +23,16 @@ function TileManager.generateDungeon()
     for y = 6, -6, -1 do
         for x = -6, 6, 1 do
             -- modifier which gives a bit of a checkered pattern to the ground
-            local mod = 0.02
+            local mod = 0.01
             if (x + y) % 2 == 0 then
                 mod = -mod
             end
 
             -- gives the room a wall
             if y == 6 or y == -6 or x == 6 or x == -6 then
-                table.insert( tileList, tile.new(x, y, "w", {0.2 + mod, 0.2 + mod, 0.2 + mod, 1} ) )
+                table.insert( tileList, tile.new(x, y, "w", {0.2 + mod, 0.2 + mod, 0.2 + mod, 1}, true) )
             else 
-                table.insert( tileList, tile.new(x, y, "f", {0.5 + mod, 0.5 + mod, 0.5 + mod, 1}) )
+                table.insert( tileList, tile.new(x, y, "f", {0.5 + mod, 0.5 + mod, 0.5 + mod, 1}, false) )
             end
             i = i + 1
             

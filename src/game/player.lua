@@ -1,40 +1,48 @@
-local Player = {}  -- This is a Module
+Player = {}  -- This is a Module
 
 local playerColor = {0.9, 0.25, 0.45, 1}
 local size = 0.57 
 local speed = 10
 
-local xPos
-local yPos
-local rotation
-local playerVerticies = {0, 0.57, 0.5, -0.27, -0.5, -0.27}
+function Player:new()
+    -- Add member variables here.
+    selfObj = {}
+    selfObj.rotation = 0
+    selfObj.playerVerticies = {}
 
-function Player.init()
-    xPos = 0
-    yPos = 0
-    rotation = 0
+    local mycollider = {}
+    mycollider.body = love.physics.newBody(world, 0, 0, "dynamic")
+    mycollider.body:setMass(10)
+    mycollider.shape = love.physics.newCircleShape(size)
+    mycollider.fixture = love.physics.newFixture(mycollider.body, mycollider.shape)
+    mycollider.fixture:setRestitution(0)
+    mycollider.fixture:setUserData("player")
+
+    selfObj.collider = mycollider
+
+    -- Make this into a class.
+    self.__index = self
+    return setmetatable(selfObj, self)
 end
 
-function Player.draw()
+function Player:draw()
+    local xPos, yPos = self.collider.body:getPosition()
     
-    playerVerticies = { xPos + size * math.sin(rotation), yPos + size * math.cos(rotation), 
-                        xPos + size * math.sin(rotation + 2/3 * math.pi), yPos + size * math.cos(rotation + 2/3 * math.pi), 
-                        xPos + size * math.sin(rotation + 4/3 * math.pi), yPos + size * math.cos(rotation + 4/3 * math.pi) }
-    --playerVerticies = {0, 0.57, 0.5, -0.27, -0.5, -0.27}
-    camera.worldToScreen_Verticies(playerVerticies)  -- updates playerVerticies
+    -- construct verticies with new rotation
+    self.playerVerticies = { xPos + size * math.sin(self.rotation), 
+                             yPos + size * math.cos(self.rotation), 
+                             xPos + size * math.sin(self.rotation + 2/3 * math.pi), 
+                             yPos + size * math.cos(self.rotation + 2/3 * math.pi), 
+                             xPos + size * math.sin(self.rotation + 4/3 * math.pi), 
+                             yPos + size * math.cos(self.rotation + 4/3 * math.pi) }
+
+    camera.worldToScreen_Verticies(self.playerVerticies)  -- updates playerVerticies
 
     love.graphics.setColor(playerColor)
-    love.graphics.polygon("fill", playerVerticies)
+    love.graphics.polygon("fill", self.playerVerticies)
 end
 
-local function movePlayer(x, y)
-    xPos = xPos + x
-    yPos = yPos + y
-
-    camera.move(x, y)  -- camera is locked onto the player
-end
-
-function Player.update(dt)
+function Player:update(dt)
     local xmov, ymov = 0, 0
 
     if love.keyboard.isDown("w", "up") then
@@ -53,11 +61,16 @@ function Player.update(dt)
         xmov = xmov + speed
     end
 
-    movePlayer(xmov * dt, ymov * dt)
-    
+    self.collider.body:setLinearVelocity(xmov, ymov)
+    camera.set(self.collider.body:getX(), self.collider.body:getY())  -- camera is locked onto the player
+
+    -- set rotation of player by having them look at the mouse.
+    local mousex, mousey = love.mouse.getPosition()
+    self.rotation = math.atan2( mousey - (SCREEN_SIZE.y/2), mousex - (SCREEN_SIZE.x/2) ) + math.pi/2
+
 end
 
-function Player.keypressed(key)
+function Player:keypressed(key)
     if key == "shift" then
         -- open inventory
     end
