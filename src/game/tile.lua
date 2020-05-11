@@ -19,7 +19,7 @@ function Tile.new(x, y, text, baseColor, isWall)
     if isWall then
         local mycollider = {}
         mycollider.body = love.physics.newBody(world, tile.xPos, tile.yPos, "static")
-        mycollider.shape = love.physics.newRectangleShape(1, 1) -- tiles are 1x1 size
+        mycollider.shape = love.physics.newRectangleShape(1/2, 1/2) -- tiles are 1x1 size
         mycollider.fixture = love.physics.newFixture(mycollider.body, mycollider.shape)
 
         tile.collider = mycollider

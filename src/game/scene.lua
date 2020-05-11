@@ -8,7 +8,7 @@ function Scene.load()
 
     player = require "src/game/player"
 
-    enemyManager = require "src/game/enemyManager"
+    enemyManager = require "src/game/enemy/enemyManager"
     enemyManager.load()
 
 end
@@ -21,6 +21,7 @@ function Scene.init()
     camera.init()
 
     world = love.physics.newWorld(0, 0, true)
+    world:setCallbacks(beginContact, endContact)
 
     -- generate a map here and manage the player and enemies and stuff
     tileManager.init()
@@ -43,15 +44,10 @@ function Scene.draw()
 end
 
 function Scene.update(dt)
-    world:update(dt)  -- update physics
-
     player:update(dt)
     enemyManager.update(dt)
-end
 
-local function cleanScene()
-    enemyManager.unloadEnemies()
-    tileManager.destroyMap()
+    world:update(dt)  -- update physics
 end
 
 function Scene.keypressed(key)
@@ -63,5 +59,37 @@ function Scene.keypressed(key)
     end
 end
 
+
+--////////////////////////////////////////////////////////////////////////////--
+
+
+local function cleanScene()
+    enemyManager.unloadCurrent()
+    tileManager.destroyMap()
+end
+
+
+--////////////////////////////////////////////////////////////////////////////--
+
+
+function beginContact(a, b, col)
+    print("contact")
+    
+    -- only triggers class local callback if userdata has been configured properly
+    if a:getUserData() ~= nil and a:getUserData().beginContact ~= nil then
+        print("function called1")
+        a:getUserData():beginContact(a, b, col)
+    end
+
+    -- neccesary?
+    if b:getUserData() ~= nil and b:getUserData().beginContact ~= nil then
+        print("function called2")
+        b:getUserData():beginContact(b, a, col)
+    end
+end
+ 
+function endContact(a, b, col)
+    -- i dunno
+end
 
 return Scene

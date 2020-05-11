@@ -4,11 +4,16 @@ local playerColor = {0.9, 0.25, 0.45, 1}
 local size = 0.57 
 local speed = 10
 
+local MAX_HP = 5
+
 function Player:new(x, y)
     -- Add member variables here.
     selfObj = {}
     selfObj.rotation = 0
+    selfObj.name = "player"
     selfObj.playerVerticies = {}
+
+    selfObj.hp = MAX_HP
 
     local mycollider = {}
     mycollider.body = love.physics.newBody(world, x, y, "dynamic")
@@ -16,9 +21,9 @@ function Player:new(x, y)
     mycollider.shape = love.physics.newCircleShape(size)
     mycollider.fixture = love.physics.newFixture(mycollider.body, mycollider.shape)
     mycollider.fixture:setRestitution(0)
-    mycollider.fixture:setUserData("player")
 
     selfObj.collider = mycollider
+    selfObj.collider.fixture:setUserData( setmetatable(selfObj, self) )
 
     -- Make this into a class.
     self.__index = self
@@ -74,6 +79,11 @@ function Player:keypressed(key)
     if key == "shift" then
         -- open inventory
     end
+end
+
+function Player:takeDamage(damage)
+    self.hp = self.hp - damage
+    print("Player hp now " .. self.hp .. " / " .. MAX_HP)
 end
 
 return Player

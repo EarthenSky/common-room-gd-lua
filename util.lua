@@ -14,4 +14,16 @@ function Util.shallowcopy(orig)
     return copy
 end
 
+function Util.getDistanceBetween(x1, y1, x2, y2)
+    local xdif = (x1 - x2)
+    local ydif = (y1 - y2)
+    return math.sqrt(xdif * xdif + ydif * ydif)
+end
+
+-- returns (x, y) pair
+function Util.polarToCartesian(rotation, length)
+    local x, y = math.cos(rotation), math.sin(rotation)
+    return x * length, y * length
+end
+
 return Util

@@ -5,6 +5,10 @@ local dasherColour = {0.45, 0.25, 0.9, 1}
 local textColour = {1, 1, 1, 1}  -- white
 local DEFAULT_SIZE = 0.5 
 local SPEED = 10
+local PROJECTILE_SPEED = 10
+
+local VIEW_RADIUS = 3
+local MAX_VIEW_RADIUS = 6
 
 -- enemyType is a string
 function Enemy:new(x, y, enemyType)
@@ -18,22 +22,24 @@ function Enemy:new(x, y, enemyType)
     if enemyType == "caster" then
         selfObj.colour = casterColour
         selfObj.text = "C"
-        selfObj.castCooldown = 1.5 -- seconds 
+        selfObj.cooldown = 4.0 -- seconds 
     elseif enemyType == "dasher" then
         selfObj.colour = dasherColour
         selfObj.text = "D"
     end
 
+    selfObj.target = nil
+    selfObj.abilityTimer = 0
+
     local mycollider = {}
     mycollider.body = love.physics.newBody(world, x, y, "dynamic")
     mycollider.body:setMass(10 * selfObj.radius)
-    mycollider.body:setPosition(x, y)
     mycollider.shape = love.physics.newCircleShape(selfObj.radius)
     mycollider.fixture = love.physics.newFixture(mycollider.body, mycollider.shape)
     mycollider.fixture:setRestitution(0)
-    mycollider.fixture:setUserData("enemy " .. enemyType)
 
     selfObj.collider = mycollider
+    selfObj.collider.fixture:setUserData( setmetatable(selfObj, self) )
 
     -- Make this into a class.
     self.__index = self
@@ -59,7 +65,39 @@ end
 
 function Enemy:update(dt)
     self.collider.body:setLinearVelocity(0, 0)
-    -- enemy behaviours
+
+    -- if player is close
+    local x1, y1 = player.collider.body:getPosition()
+    local x2, y2 = self.collider.body:getPosition()
+    if self.target == nil then
+        if util.getDistanceBetween(x1, y1, x2, y2) < VIEW_RADIUS then
+            self.target = player
+
+            self.abilityTimer = 0
+            print("starting timer")
+        end
+    else
+        if util.getDistanceBetween(x1, y1, x2, y2) > MAX_VIEW_RADIUS then
+            self.target = nil
+            print("oop goodbye")
+        end
+
+        self.abilityTimer = self.abilityTimer + dt  -- update timer while there is a target
+    end
+
+    -- shoot projectile
+    if self.abilityTimer > self.cooldown then
+        print("shooty shooty")
+        self.abilityTimer = self.abilityTimer - self.cooldown  -- should prolly include the small amount of overlap time
+
+        local rotation = math.atan2(y1 - y2, x1 - x2)
+        local length = 1
+
+        local xVel, yVel = util.polarToCartesian(rotation, length)
+        local xPos, yPos = self.collider.body:getPosition()
+
+        enemyManager.spawnProjectile( projectile:new(xPos, yPos, self.radius, xVel, yVel, PROJECTILE_SPEED) )  -- pew pew
+    end
 end
 
 return Enemy
