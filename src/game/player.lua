@@ -4,15 +4,15 @@ local playerColor = {0.9, 0.25, 0.45, 1}
 local size = 0.57 
 local speed = 10
 
-function Player:new()
+function Player:new(x, y)
     -- Add member variables here.
     selfObj = {}
     selfObj.rotation = 0
     selfObj.playerVerticies = {}
 
     local mycollider = {}
-    mycollider.body = love.physics.newBody(world, 0, 0, "dynamic")
-    mycollider.body:setMass(10)
+    mycollider.body = love.physics.newBody(world, x, y, "dynamic")
+    mycollider.body:setMass(10 * size)
     mycollider.shape = love.physics.newCircleShape(size)
     mycollider.fixture = love.physics.newFixture(mycollider.body, mycollider.shape)
     mycollider.fixture:setRestitution(0)

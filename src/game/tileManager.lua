@@ -8,7 +8,7 @@ TODO: make tile chunks so that every tile is not individually being drawn to the
 
 
 local TILE_SIZE = 1 * camera.UNIT_SIZE
-local tileList
+local tileList = {}
 
 function TileManager.init() 
     tileList = {}
