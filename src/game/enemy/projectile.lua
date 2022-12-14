@@ -24,7 +24,7 @@ function Projectile:new(xCenter, yCenter, offsetRadius, xVel, yVel, speed)
 
     selfObj.xVel, selfObj.yVel = xVel * speed, yVel * speed
     selfObj.speed = speed
-    selfObj.id = nil
+    --selfObj.id = nil  --TODO:  can i do this?
 
     -- to make sure that the projectile does not spawn inside of the 
     local xOffset = (offsetRadius + selfObj.radius + bias) * xVel
@@ -77,6 +77,7 @@ function Projectile:beginContact(a, b, col)
     print(self.id)
     if b:getUserData() ~= nil and b:getUserData().name == "player" then
         print("hit player")
+        -- TODO: will player take damage?
         b:getUserData():takeDamage(PROJECTILE_DAMAGE)
     end
         
